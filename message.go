@@ -802,6 +802,12 @@ func (e *Envelope) Parse(fields []interface{}) error {
 	}
 	if msgId, ok := fields[9].(string); ok {
 		e.MessageId = msgId
+	} else if fields[9] != nil {
+		// fields[9] - *bytes.Buffer
+		// TODO bad mail server... Message-ID:  \n<id_text...
+		e.MessageId = strings.TrimFunc(fmt.Sprintf("%v", fields[9]), func(r rune) bool {
+			return r == rune(' ') || r == rune('\n')
+		})
 	}
 
 	return nil
